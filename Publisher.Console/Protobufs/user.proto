@@ -1,9 +1,0 @@
-syntax = "proto3";
-package ProtoDtos;
-
-message User {
-  string FullName = 1;
-  int32 FavoriteNumber = 2;
-  string FavoriteColor = 3;
-  string NewStringField = 4;
-}

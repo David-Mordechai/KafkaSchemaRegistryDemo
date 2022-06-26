@@ -1,0 +1,23 @@
+{
+  "doc": "Sample schema to help you get started.",
+  "fields": [
+    {
+      "doc": "The FullName property of type string.",
+      "name": "FullName",
+      "type": "string"
+    },
+    {
+      "doc": "The FavoriteNumber property of type int.",
+      "name": "FavoriteNumber",
+      "type": "int"
+    },
+    {
+      "doc": "he FullName property of type string.",
+      "name": "FavoriteColor",
+      "type": "string"
+    }
+  ],
+  "name": "User",
+  "namespace": "Avro",
+  "type": "record"
+}

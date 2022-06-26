@@ -1,8 +1,8 @@
-﻿using Confluent.Kafka;
+﻿using Avro;
+using Confluent.Kafka;
 using Confluent.Kafka.SyncOverAsync;
 using Confluent.SchemaRegistry;
 using Confluent.SchemaRegistry.Serdes;
-using ProtoDtos;
 
 const string bootstrapServers = "localhost:9092";
 const string schemaRegistryUrl = "localhost:8081";
@@ -16,8 +16,6 @@ var schemaRegistryConfig = new SchemaRegistryConfig
     // the Java implementation.
     Url = schemaRegistryUrl
 };
-using var schemaRegistry = new  CachedSchemaRegistryClient(schemaRegistryConfig);
-var schema = await schemaRegistry.GetLatestSchemaAsync("users-value");
 
 var consumerConfig = new ConsumerConfig
 {
@@ -28,9 +26,9 @@ var consumerConfig = new ConsumerConfig
 var cts = new CancellationTokenSource();
 var consumeTask = Task.Run(() =>
 {
-    using var consumer =
-        new ConsumerBuilder<string, User>(consumerConfig)
-            .SetValueDeserializer(new ProtobufDeserializer<User>().AsSyncOverAsync())
+    using var schemaRegistry = new CachedSchemaRegistryClient(schemaRegistryConfig);
+    using var consumer = new ConsumerBuilder<string, User>(consumerConfig)
+            .SetValueDeserializer(new AvroDeserializer<User>(schemaRegistry).AsSyncOverAsync())
             .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
             .Build();
     consumer.Subscribe(topicName);

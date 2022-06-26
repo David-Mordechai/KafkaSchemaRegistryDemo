@@ -1,7 +1,7 @@
-﻿using Confluent.Kafka;
+﻿using Avro;
+using Confluent.Kafka;
 using Confluent.SchemaRegistry;
 using Confluent.SchemaRegistry.Serdes;
-using ProtoDtos;
 
 const string bootstrapServers = "localhost:9092";
 const string schemaRegistryUrl = "localhost:8081";
@@ -21,9 +21,16 @@ var schemaRegistryConfig = new SchemaRegistryConfig
     Url = schemaRegistryUrl,
 };
 
+var avroSerializerConfig = new AvroSerializerConfig
+{
+    // optional Avro serializer properties:
+    BufferBytes = 100
+};
+
+
 using var schemaRegistry = new CachedSchemaRegistryClient(schemaRegistryConfig);
 using var producer = new ProducerBuilder<string, User>(producerConfig)
-        .SetValueSerializer(new ProtobufSerializer<User>(schemaRegistry))
+        .SetValueSerializer(new AvroSerializer<User>(schemaRegistry, avroSerializerConfig))
         .Build();
 Console.WriteLine($"{producer.Name} producing on {topicName}. Enter user names, q to exit.");
 
